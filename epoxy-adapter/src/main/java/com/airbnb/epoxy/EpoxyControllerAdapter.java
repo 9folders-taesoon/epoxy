@@ -230,6 +230,26 @@ public final class EpoxyControllerAdapter extends BaseEpoxyAdapter implements Re
     }
   }
 
+  @UiThread
+  void notifyNItemModelChanged(int ...positions) {
+    ArrayList<EpoxyModel<?>> updatedList = new ArrayList<>(getCurrentModels());
+
+    notifyBlocker.allowChanges();
+    for (int pos : positions) {
+      notifyItemChanged(pos);
+    }
+    
+    notifyBlocker.blockChanges();
+
+    boolean interruptedDiff = differ.forceListOverride(updatedList);
+
+    if (interruptedDiff) {
+      // The move interrupted a model rebuild/diff that was in progress,
+      // so models may be out of date and we should force them to rebuilt
+      epoxyController.requestModelBuild();
+    }
+  }
+
   private static final ItemCallback<EpoxyModel<?>> ITEM_CALLBACK =
       new ItemCallback<EpoxyModel<?>>() {
         @Override

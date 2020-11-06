@@ -705,6 +705,12 @@ public abstract class EpoxyController implements ModelCollector, StickyHeaderCal
     adapter.notifyModelChanged(position);
   }
 
+  public void notifyNItemModelChanged(int ...positions) {
+    assertNotBuildingModels();
+
+    adapter.notifyNItemModelChanged(positions);
+  }
+
 
   /**
    * Get the underlying adapter built by this controller. Use this to get the adapter to set on a
